@@ -1,4 +1,13 @@
-<?
+<?php
+
+function pkcs5_unpad($text) 
+{ 
+    $pad = ord($text{strlen($text)-1}); 
+    if ($pad > strlen($text)) return false; 
+    if (strspn($text, chr($pad), strlen($text) - $pad) != $pad) return false; 
+    return substr($text, 0, -1 * $pad); 
+}
+
 function decrypt_openfirepass($ciphertext, $key) {
 	$cypher = 'blowfish';
 	$mode   = 'cbc';
@@ -11,5 +20,6 @@ function decrypt_openfirepass($ciphertext, $key) {
 		mcrypt_generic_init($td, $sha1_key, $iv);
 		$plaintext = mdecrypt_generic($td, $ciphertext);
 	}
-	return $plaintext;
+	return pkcs5_unpad($plaintext);
 }
+?>
